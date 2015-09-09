@@ -45,6 +45,9 @@ po6 :: strerror(int err)
 #if _GNU_SOURCE
     // GNU
     strncpy(buf, strerror_r(err, buf, sizeof(buf)), sizeof(buf));
+#elif _MSC_VER
+    // Windows
+    errno = strerror_s(buf, sizeof(buf), err);
 #else
     // XSI-compliant
     errno = strerror_r(err, buf, sizeof(buf));
@@ -61,9 +64,7 @@ po6 :: strerror(int err)
     return std::string(buf);
 }
 
-#define XSTR(x) #x
-#define STR(x) XSTR(x)
-#define CSTRINGIFY(x) if ((x) == err) { return STR(x); }
+#define CSTRINGIFY(x) if ((x) == err) { return #x; }
 
 const char*
 po6 :: strerrno(int err)
