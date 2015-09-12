@@ -68,3 +68,19 @@
 /test/time
 /test/time.log
 /test/time.trs
+# CMake
+/CMakeFiles
+/CMakeCache.txt
+/CTestTestfile.cmake
+/cmake_install.cmake
+/Testing
+# Visual Studio
+/*\.vcxproj*
+/*\.sln
+/*\.sdf
+/*\.opensdf
+/*\.dir
+/Debug
+/Release
+/Win32
+/.vs

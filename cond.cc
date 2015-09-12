@@ -35,27 +35,34 @@
 #include "po6/threads/cond.h"
 
 using po6::threads::cond;
+using po6::threads::mutex;
 
 cond :: cond(mutex* mtx)
     : m_mtx(mtx)
     , m_cond()
 {
+#ifdef _MSC_VER
+    InitializeConditionVariable(&m_cond);
+#else
     int ret = pthread_cond_init(&m_cond, NULL);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 cond :: ~cond() throw ()
 {
+#ifndef _MSC_VER
     int ret = pthread_cond_destroy(&m_cond);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 void
@@ -73,32 +80,49 @@ cond :: unlock()
 void
 cond :: wait()
 {
+#ifdef _MSC_VER
+    BOOL ret = SleepConditionVariableSRW(&m_cond, &m_mtx->m_mutex, INFINITE, 0);
+
+    if (ret == 0)
+    {
+        abort();
+    }
+#else
     int ret = pthread_cond_wait(&m_cond, &m_mtx->m_mutex);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 void
 cond :: signal()
 {
+#ifdef _MSC_VER
+    WakeConditionVariable(&m_cond);
+#else
     int ret = pthread_cond_signal(&m_cond);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 void
 cond :: broadcast()
 {
+#ifdef _MSC_VER
+    WakeAllConditionVariable(&m_cond);
+#else
     int ret = pthread_cond_broadcast(&m_cond);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }

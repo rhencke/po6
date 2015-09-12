@@ -13,7 +13,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #################################### Source ####################################
 
 add_library(po6
-  barrier.cc
+  # barrier.cc
   cond.cc
   errno.cc
   # fd.cc
@@ -21,7 +21,7 @@ add_library(po6
   # location.cc
   # ipaddr.cc
   # mmap.cc
-  mutex.cc
+  # mutex.cc
   # path.cc
   # rwlock.cc
   # socket.cc
@@ -50,7 +50,7 @@ set(TESTS
 set(th_sources test/runner.cc th.cc)
 
 set(test_errno_SOURCES test/errno.cc)
-set(test_errno_LDADD_Windows po6)
+set(test_errno_LDADD po6)
 
 # set(test_io_fd_SOURCES test/io/fd.cc)
 # set(test_io_fd_LDADD_Windows Ws2_32 po6)
@@ -81,7 +81,13 @@ function(add_th_test test_path)
   get_filename_component(test_name ${test_path} NAME)
   add_executable(${test_ident} ${${test_ident}_SOURCES} ${th_sources})
   set_target_properties(${test_ident} PROPERTIES FOLDER ${test_dir} PROJECT_LABEL ${test_name})
+
+  # libraries to link for just this platform
   target_link_libraries(${test_ident} ${${test_ident}_LDADD_${CMAKE_SYSTEM_NAME}})
+
+  # libraries to link for all platforms
+  target_link_libraries(${test_ident} ${${test_ident}_LDADD})
+
   add_test(${test_ident} ${test_ident})
 endfunction()
 

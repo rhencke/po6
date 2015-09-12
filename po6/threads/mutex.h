@@ -28,8 +28,14 @@
 #ifndef po6_threads_mutex_h_
 #define po6_threads_mutex_h_
 
+#ifdef _MSC_VER
+// Windows
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#else
 // POSIX
 #include <pthread.h>
+#endif
 
 namespace po6
 {
@@ -53,7 +59,11 @@ class mutex
         friend class cond;
 
     private:
+#ifdef _MSC_VER
+        SRWLOCK m_mutex;
+#else
         pthread_mutex_t m_mutex;
+#endif
 
     private:
         mutex(const mutex&);

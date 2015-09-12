@@ -8,7 +8,7 @@
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright
 //       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
+//       documentation and/or other materials provided withs the distribution.
 //     * Neither the name of po6 nor the names of its contributors may be used
 //       to endorse or promote products derived from this software without
 //       specific prior written permission.
@@ -32,10 +32,34 @@
 namespace
 {
 
-TEST(ErrnoTest, KnownErrorString)
+TEST(StrerrorTest, KnownErrorString)
 {
-    auto ok = po6::strerrno(0);
+    // Exact error message is locale/platform specific.
+    // Pick a common error type, and just ensure we found some string for it.
+    std::string perm_str = po6::strerror(EPERM);
+
+    int cmp = perm_str.compare("unknown error");
+
+    ASSERT_NE(cmp, 0);
 }
 
+TEST(StrerrnoTest, KnownErrno)
+{
+    const char* perm_str = po6::strerrno(EPERM);
+
+    int cmp = strcmp("EPERM", perm_str);
+
+    ASSERT_EQ(cmp, 0);
+}
+
+TEST(StrerrnoTest, UnknownErrno)
+{
+    // Pick something highly unlikely to be an error.
+    const char* unknown_str = po6::strerrno(0xBEEFFACE);
+
+    int cmp = strcmp("unknown error", unknown_str);
+
+    ASSERT_EQ(cmp, 0);
+}
 
 } // namespace

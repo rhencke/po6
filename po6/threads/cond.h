@@ -28,8 +28,14 @@
 #ifndef po6_threads_cond_h_
 #define po6_threads_cond_h_
 
+#ifdef _MSC_VER
+// Windows
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#else
 // POSIX
 #include <pthread.h>
+#endif
 
 // po6
 #include <po6/threads/mutex.h>
@@ -54,7 +60,11 @@ class cond
 
     private:
         mutex* m_mtx;
+#ifdef _MSC_VER
+        CONDITION_VARIABLE m_cond;
+#else
         pthread_cond_t m_cond;
+#endif
 
     private:
         cond(const cond&);

@@ -37,44 +37,58 @@ using po6::threads::mutex;
 mutex :: mutex()
     : m_mutex()
 {
-    int ret = pthread_mutex_init(&m_mutex, NULL);
-
+#ifdef _MSC_VER
+    InitializeSRWLock(&m_mutex);
+#else
+    int ret = pthread_mutex_init(&m_mutex, NULL);    
+    
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 mutex :: ~mutex() throw ()
 {
+#ifndef _MSC_VER
     int ret = pthread_mutex_destroy(&m_mutex);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 void
 mutex :: lock()
 {
+#ifdef _MSC_VER
+    AcquireSRWLockExclusive(&m_mutex);
+#else
     int ret = pthread_mutex_lock(&m_mutex);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 void
 mutex :: unlock()
 {
+#ifdef _MSC_VER
+    ReleaseSRWLockExclusive(&m_mutex);
+#else
     int ret = pthread_mutex_unlock(&m_mutex);
 
     if (ret != 0)
     {
         abort();
     }
+#endif
 }
 
 mutex :: hold :: hold(mutex* mtx)
